@@ -5,18 +5,22 @@ const UserSchema= new mongoose.Schema({
         type:String,
         required:true
     },
+    username:{
+        type:String,
+        required:true
+    },
     email:{
         type:String,
         required:true
     },
-    Password:{
+    password:{
         type:String,
         required:true
     },
     orders:{
         type:[mongoose.Schema.Types.ObjectId],
         ref:"Order",
-        required:true
+    
     },
     cart:{
         type:[
