@@ -65,14 +65,13 @@ export const addToCart = async (req, res) => {
     const user = await User.findById(token.id);
 
     const index = user.cart.findIndex((item) => {
-     return item.product.equals(productId);
+      return item.product.equals(productId);
     });
-    if (index!==-1) {
-      user.cart[index].quantity += quantity;
+    if (index !== -1) {
+      user.cart[index].quantity += Number(quantity);
     } else {
       user.cart.push({ product: productId, quantity });
     }
-
 
     await user.save();
     return res
@@ -82,4 +81,36 @@ export const addToCart = async (req, res) => {
     console.log(error);
   }
 };
+export const removeFromCart = async (req, res) => {
+ try {
+  const { productId, quantity } = req.body;
 
+  const token = req.user;
+  const user = await User.findById(token.id);
+
+  const item = user.cart.findIndex((item) => {
+    return item.product.equals(productId);
+  });
+
+  if(item==-1){
+    console.log("id nhi mili cart ch");
+    
+   return res.json({message:"nothing in cart"})
+  }
+  
+  
+  if(user.cart[item].quantity<=quantity){
+   user.cart.splice(item,1)
+  }
+  else{
+    user.cart[item].quantity-=Number(quantity);
+  }
+  await user.save();
+  return res.json({user})
+  
+ } catch (error) {
+   console.log("remove cart:",error);
+  throw new Error("error in removing from cart");
+  
+ }
+};
