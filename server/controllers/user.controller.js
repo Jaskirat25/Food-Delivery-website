@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import Food from "../models/Food.js";
+import Order from "../models/Order.js";
 export const userSignUp = async (req, res) => {
   try {
     const { name, email, password, username } = req.body;
@@ -110,14 +111,38 @@ export const removeFromCart = async (req, res) => {
     throw new Error("error in removing from cart");
   }
 };
-export const getCartItems=async (req,res)=>{
+
+export const getCartItems = async (req, res, next) => {
   try {
-    const token=req.user;
-    const user=await User.findById(token.id);
-   const cart= user.cart;
-   return res.status(200).json(cart)
-  } catch (error) {
-    console.log("remove cart:", error);
-    throw new Error("error in removing from cart");
+    const userJWT = req.user;
+    const user = await User.findById(userJWT.id).populate({
+      path: "cart.product",
+      model: "Food",
+    });
+    const cartItems = user.cart;
+    return res.status(200).json(cartItems);
+  } catch (err) {
+    next(err);
   }
+};
+export const placeOrder=async(req,res,next)=>{
+try {
+  const {products,address,totalAmount}=req.body;
+  const token=req.user;
+  const user=await User.findOne({token});
+  const order=new Order({
+    products,
+    user:user._id,
+    totalAmount,
+    address
+  })
+  await order.save();
+  user.cart=[];
+  await user.save();
+  return res.json({message:"order plcaed successfully",order});
+} catch (error) {
+  console.log("error in placing order");
+  
+  throw new Error(error)
+}
 }
