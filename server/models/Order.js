@@ -34,7 +34,7 @@ required:true
         
       },
     ],
-    required:true,
+   
   },
 });
 export default mongoose.model("Order",OrderSchema)

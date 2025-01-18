@@ -21,7 +21,7 @@ export const addProducts = async (req, res, next) => {
         category,
       });
       const createdFoods = await product.save();
-      createdfoods.push(createdFoods);
+      createdfoods.push(product);
     }
     return res
       .status(201)
