@@ -37,13 +37,14 @@ export const userLoginIn = async (req, res) => {
 
     const user = await User.findOne({ email });
 
+
     if (!user) {
       console.log("account toh bnale pehle");
 
       return res.status(401).json({ message: "user dont exist" });
     }
     const pass = bcrypt.compareSync(password, user.password);
-
+    console.log(user.password);
     if (!pass) {
       console.log("galat password hai bhai");
 
